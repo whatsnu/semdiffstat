@@ -11,4 +11,5 @@
 //   * detect comment changes vs whitespace changes vs functional changes
 //   * support other languages
 //   * maybe provide sorting helpers: sort by name, sort by magnitude of change, sort ins-then-del-then-mod
+//   * add a screenshot to the readme :P
 package semdiffstat
