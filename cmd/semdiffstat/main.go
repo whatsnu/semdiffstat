@@ -45,7 +45,8 @@ func main() {
 
 	changes, err := semdiffstat.Go(asrc, bsrc)
 	if err != nil {
-		log.Fatal("could not parse Go files %v and %v: %v\n", asrc, bsrc, err)
+		// TODO: emit a regular diffstat instead?
+		log.Fatalf("could not parse Go files %v and %v: %v\n", aName, bName, err)
 	}
 
 	for _, c := range changes {
