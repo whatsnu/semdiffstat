@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/fatih/color"
-	"github.com/josharian/semdiffstat"
+	"github.com/whatsnu/semdiffstat"
 )
 
 func main() {
