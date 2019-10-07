@@ -6,7 +6,9 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"strconv"
 	"strings"
+	"text/tabwriter"
 
 	"github.com/fatih/color"
 	"github.com/whatsnu/semdiffstat"
@@ -49,22 +51,22 @@ func main() {
 		log.Fatalf("could not parse Go files %v and %v: %v\n", aName, bName, err)
 	}
 
+	max := maxCountLength(changes)
+	w := tabwriter.NewWriter(os.Stdout, 0, 0, 0, ' ', 0)
 	for _, c := range changes {
-		// TODO: align | characters
 		// TODO: general UI improvements
-		if c.Inserted {
-			fmt.Printf("%v (inserted) %s\n", c.Name, pluses(c.InsLines))
-			continue
+		var annotation string
+		switch {
+		case c.Inserted:
+			annotation = " (inserted)"
+		case c.Deleted:
+			annotation = " (deleted)"
 		}
-		if c.Deleted {
-			fmt.Printf("%v (deleted) %s\n", c.Name, minuses(c.DelLines))
-			continue
-		}
-		// Modified/other
-		fmt.Printf("%v | %d %s%s\n", c.Name, c.InsLines+c.DelLines, pluses(c.InsLines), minuses(c.DelLines))
+		fmt.Fprintf(w, "%v\t | %*d\t %s%s%s\t\n", c.Name, max, c.InsLines+c.DelLines,
+			pluses(c.InsLines), minuses(c.DelLines), annotation)
 	}
-
-	fmt.Println()
+	fmt.Fprintln(w)
+	w.Flush()
 }
 
 var (
@@ -78,4 +80,13 @@ func pluses(ins int) string {
 }
 func minuses(del int) string {
 	return boldRed.Sprint(strings.Repeat("-", del))
+}
+func maxCountLength(changes []*semdiffstat.Change) (max int) {
+	for _, c := range changes {
+		n := len(strconv.Itoa(c.InsLines + c.DelLines))
+		if n > max {
+			max = n
+		}
+	}
+	return
 }
